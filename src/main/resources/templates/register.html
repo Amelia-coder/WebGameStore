@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GameStore</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --primary-text: #ffffff;
+            --secondary-text: #b3b3b3;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --transition-speed: 0.3s;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .register-container {
+            max-width: 400px;
+            margin: 120px auto 0;
+            padding: 2rem;
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            color: var(--secondary-text);
+        }
+        
+        .form-group input {
+            padding: 0.8rem;
+            border: 1px solid var(--secondary-text);
+            border-radius: 5px;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            transition: border-color var(--transition-speed);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+        
+        .register-button {
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: var(--primary-text);
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity var(--transition-speed);
+        }
+        
+        .register-button:hover {
+            opacity: 0.9;
+        }
+        
+        .register-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .login-link a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the header fragment -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main>
+        <div class="register-container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+            <form class="register-form" 
+                  th:action="@{/register}" 
+                  th:object="${user}" 
+                  method="post" 
+                  novalidate>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" 
+                           id="username" 
+                           th:field="*{username}" 
+                           required 
+                           minlength="3" 
+                           maxlength="50"
+                           pattern="[a-zA-Z0-9_-]+"
+                           title="Username can only contain letters, numbers, underscores and hyphens">
+                    <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" 
+                           id="email" 
+                           th:field="*{email}" 
+                           required>
+                    <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" 
+                           id="password" 
+                           th:field="*{password}" 
+                           required 
+                           minlength="6"
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+                           title="Password must be at least 6 characters long and contain at least one letter and one number">
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <button type="submit" class="register-button">Create Account</button>
+            </form>
+            <div class="login-link">
+                <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Client-side validation
+        document.querySelector('.register-form').addEventListener('submit', function(e) {
+            const username = document.getElementById('username');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            let isValid = true;
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            // Username validation
+            if (!username.value.match(/^[a-zA-Z0-9_-]{3,50}$/)) {
+                isValid = false;
+                username.nextElementSibling.textContent = 
+                    'Username must be 3-50 characters long and can only contain letters, numbers, underscores and hyphens';
+            }
+
+            // Email validation
+            if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                isValid = false;
+                email.nextElementSibling.textContent = 'Please enter a valid email address';
+            }
+
+            // Password validation
+            if (!password.value.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)) {
+                isValid = false;
+                password.nextElementSibling.textContent = 
+                    'Password must be at least 6 characters long and contain at least one letter and one number';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - GameStore</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --primary-text: #ffffff;
+            --secondary-text: #b3b3b3;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --transition-speed: 0.3s;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .store-container {
+            padding-top: 80px;
+        }
+        
+        .filters {
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            color: var(--secondary-text);
+        }
+        
+        .filter-group select {
+            padding: 0.5rem;
+            border: 1px solid var(--secondary-text);
+            border-radius: 5px;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--secondary-text);
+            border-radius: 5px;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+        }
+        
+        .search-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: opacity var(--transition-speed);
+        }
+        
+        .search-button:hover {
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .game-card {
+            background: var(--secondary-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform var(--transition-speed);
+            box-shadow: var(--card-shadow);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+        }
+
+        .game-title {
+            margin: 0 0 1rem 0;
+            color: var(--primary-text);
+        }
+
+        .game-description {
+            color: var(--secondary-text);
+            margin-bottom: 1rem;
+        }
+
+        .game-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        .buy-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: var(--primary-text);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: opacity var(--transition-speed);
+        }
+
+        .buy-button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the header fragment -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main>
+        <div class="store-container container">
+            <div class="filters">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search games...">
+                    <button class="search-button">Search</button>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre">
+                            <option value="">All Genres</option>
+                            <option value="action">Action</option>
+                            <option value="rpg">RPG</option>
+                            <option value="strategy">Strategy</option>
+                            <option value="sports">Sports</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="price">Price Range</label>
+                        <select id="price">
+                            <option value="">All Prices</option>
+                            <option value="0-20">Under $20</option>
+                            <option value="20-40">$20 - $40</option>
+                            <option value="40-60">$40 - $60</option>
+                            <option value="60+">$60+</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="platform">Platform</label>
+                        <select id="platform">
+                            <option value="">All Platforms</option>
+                            <option value="pc">PC</option>
+                            <option value="ps5">PlayStation 5</option>
+                            <option value="xbox">Xbox Series X</option>
+                            <option value="switch">Nintendo Switch</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="games-grid">
+                <!-- Game cards will be dynamically populated here -->
+                <article class="game-card">
+                    <img src="https://via.placeholder.com/300x200" alt="Game Title" class="game-image">
+                    <div class="game-info">
+                        <h3 class="game-title">Sample Game</h3>
+                        <p class="game-description">This is a sample game description that showcases the game's features and story.</p>
+                        <p class="game-price">$29.99</p>
+                        <a href="#" class="buy-button">Buy Now</a>
+                    </div>
+                </article>
+                <!-- More game cards... -->
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <header th:fragment="header">
+        <style>
+            .header-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem;
+                background-color: var(--secondary-bg);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .logo {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: var(--primary-text);
+                text-decoration: none;
+                transition: color var(--transition-speed);
+            }
+
+            .logo:hover {
+                color: var(--accent-blue);
+            }
+
+            nav ul {
+                display: flex;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                gap: 2rem;
+            }
+
+            nav a {
+                color: var(--secondary-text);
+                text-decoration: none;
+                transition: color var(--transition-speed);
+            }
+
+            nav a:hover, nav a.active {
+                color: var(--primary-text);
+            }
+
+            .user-section {
+                display: flex;
+                align-items: center;
+            }
+
+            .auth-buttons {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .login-button, .register-button {
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+                text-decoration: none;
+                transition: all var(--transition-speed);
+            }
+
+            .login-button {
+                background-color: transparent;
+                color: var(--accent-blue);
+                border: 1px solid var(--accent-blue);
+            }
+
+            .login-button:hover {
+                background-color: var(--accent-blue);
+                color: var(--primary-text);
+            }
+
+            .register-button {
+                background-color: var(--accent-blue);
+                color: var(--primary-text);
+                border: 1px solid var(--accent-blue);
+            }
+
+            .register-button:hover {
+                background-color: transparent;
+                color: var(--accent-blue);
+            }
+
+            .user-profile {
+                position: relative;
+                cursor: pointer;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem;
+                border-radius: 4px;
+                transition: background-color var(--transition-speed);
+            }
+
+            .user-info:hover {
+                background-color: var(--primary-bg);
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .username {
+                color: var(--primary-text);
+            }
+
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: var(--secondary-bg);
+                border-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                min-width: 200px;
+                display: none;
+                z-index: 1000;
+            }
+
+            .user-profile:hover .dropdown-menu {
+                display: block;
+            }
+
+            .menu-item {
+                display: block;
+                padding: 0.75rem 1rem;
+                color: var(--secondary-text);
+                text-decoration: none;
+                transition: all var(--transition-speed);
+            }
+
+            .menu-item:hover {
+                background-color: var(--primary-bg);
+                color: var(--primary-text);
+            }
+
+            .logout-form {
+                padding: 0.5rem;
+            }
+
+            .logout-button {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                background-color: var(--danger-color);
+                color: var(--primary-text);
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: opacity var(--transition-speed);
+            }
+
+            .logout-button:hover {
+                opacity: 0.9;
+            }
+        </style>
+
+        <div class="container header-content">
+            <a th:href="@{/}" class="logo">GameStore</a>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/}" th:classappend="${activePage == 'home' ? 'active' : ''}">Home</a></li>
+                    <li><a th:href="@{/store}" th:classappend="${activePage == 'store' ? 'active' : ''}">Store</a></li>
+                    <li><a th:href="@{/about}" th:classappend="${activePage == 'about' ? 'active' : ''}">About</a></li>
+                </ul>
+            </nav>
+            <div class="user-section">
+                <!-- Show when user is not authenticated -->
+                <div sec:authorize="isAnonymous()" class="auth-buttons">
+                    <a th:href="@{/login}" class="login-button">Login</a>
+                    <a th:href="@{/register}" class="register-button">Register</a>
+                </div>
+                
+                <!-- Show when user is authenticated -->
+                <div sec:authorize="isAuthenticated()" class="user-profile">
+                    <div class="user-info">
+                        <img th:src="@{/images/avatar.svg}" alt="User avatar" class="user-avatar">
+                        <span class="username" sec:authentication="principal.username">Username</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a th:href="@{/profile}" class="menu-item">Profile</a>
+                        <a th:href="@{/orders}" class="menu-item">Orders</a>
+                        <div sec:authorize="hasRole('ADMIN')" class="menu-item">
+                            <a th:href="@{/admin}">Admin Panel</a>
+                        </div>
+                        <form th:action="@{/logout}" method="post" class="logout-form">
+                            <button type="submit" class="logout-button">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</body>
+</html> 

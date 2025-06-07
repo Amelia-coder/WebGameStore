@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - GameStore</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --primary-text: #ffffff;
+            --secondary-text: #b3b3b3;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --transition-speed: 0.3s;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .about-container {
+            padding-top: 100px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about-section {
+            background-color: var(--secondary-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .about-section h2 {
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .about-section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .team-member {
+            text-align: center;
+        }
+        
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid var(--accent-purple);
+            transition: transform var(--transition-speed);
+        }
+        
+        .team-member img:hover {
+            transform: scale(1.05);
+        }
+        
+        .team-member h3 {
+            color: var(--primary-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-member p {
+            color: var(--secondary-text);
+        }
+
+        .values-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .values-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .values-list li i {
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the header fragment -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main>
+        <div class="about-container container">
+            <div class="about-section">
+                <h2>About GameStore</h2>
+                <p>Welcome to GameStore, your premier destination for digital gaming entertainment. Founded in 2025, we've been committed to providing gamers with the best titles at competitive prices.</p>
+                <p>Our mission is to create an immersive and user-friendly platform where gaming enthusiasts can discover, purchase, and enjoy their favorite games. We work directly with developers and publishers to ensure you get authentic games with the best possible gaming experience.</p>
+            </div>
+
+            <div class="about-section">
+                <h2>Our Team</h2>
+                <p>Meet the passionate gamers and tech enthusiasts behind GameStore. Our team is dedicated to providing you with the best gaming marketplace experience.</p>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h3>John Doe</h3>
+                        <p>Founder & CEO</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h3>Jane Smith</h3>
+                        <p>Lead Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/150" alt="Team Member">
+                        <h3>Mike Johnson</h3>
+                        <p>Game Curator</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <h2>Our Values</h2>
+                <p>At GameStore, we believe in:</p>
+                <ul class="values-list">
+                    <li>✨ Quality: We carefully curate our game selection to ensure the highest quality titles.</li>
+                    <li>🤝 Fair Pricing: We work to provide competitive prices and regular deals.</li>
+                    <li>🎮 Gaming Community: We foster a vibrant community of gamers and developers.</li>
+                    <li>🔒 Security: Your security and privacy are our top priorities.</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

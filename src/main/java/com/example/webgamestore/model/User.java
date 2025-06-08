@@ -14,10 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -47,10 +45,8 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<String> roles = new HashSet<>();
+    @Column(nullable = false)
+    private String role = "USER";
 
     @Column(nullable = false)
     private LocalDateTime registrationDate;
@@ -65,9 +61,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-                .collect(Collectors.toSet());
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 
     @Override
@@ -90,11 +84,7 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void addRole(String role) {
-        roles.add(role.toUpperCase());
-    }
-
-    public boolean hasRole(String role) {
-        return roles.contains(role.toUpperCase());
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
     }
 } 

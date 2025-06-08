@@ -17,14 +17,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+    role VARCHAR(20) NOT NULL DEFAULT 'USER',
     registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE user_roles (
-    user_id BIGINT NOT NULL,
-    role VARCHAR(20) NOT NULL,
-    PRIMARY KEY (user_id, role),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE developers (

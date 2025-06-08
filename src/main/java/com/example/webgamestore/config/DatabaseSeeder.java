@@ -2,6 +2,7 @@ package com.example.webgamestore.config;
 
 import com.example.webgamestore.model.*;
 import com.example.webgamestore.repository.*;
+import com.example.webgamestore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DatabaseSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Override
     @Transactional
@@ -23,14 +24,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
 
         // Create admin user
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setEmail("admin@gamestore.com");
-        admin.setPassword(passwordEncoder.encode("admin123"));
-        admin.addRole("ADMIN");
-        admin.addRole("USER");
-        admin.setFirstName("Admin");
-        admin.setLastName("User");
-        userRepository.save(admin);
+        userService.createAdminUser("admin", "admin123");
     }
 } 

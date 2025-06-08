@@ -53,7 +53,7 @@ public class UserService {
         user.setUsername(registrationDto.getUsername());
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        user.addRole("USER");
+        user.setRole("USER");
 
         return userRepository.save(user);
     }
@@ -77,7 +77,7 @@ public class UserService {
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // By default, assign USER role
-        user.addRole("USER");
+        user.setRole("USER");
         return userRepository.save(user);
     }
 
@@ -87,15 +87,14 @@ public class UserService {
         admin.setUsername(username);
         admin.setEmail("admin@gamestore.com");
         admin.setPassword(passwordEncoder.encode(password));
-        admin.addRole("ADMIN");
-        admin.addRole("USER"); // Admin should also have USER role
+        admin.setRole("ADMIN");
         return userRepository.save(admin);
     }
 
     @Transactional
-    public void addAdminRole(String username) {
+    public void makeAdmin(String username) {
         User user = findByUsername(username);
-        user.addRole("ADMIN");
+        user.setRole("ADMIN");
         userRepository.save(user);
     }
 
@@ -113,24 +112,6 @@ public class UserService {
     }
 
     @Transactional
-    public void checkAndFixAdminRoles(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-
-        // Check if user has ADMIN role
-        if (!user.getRoles().contains("ADMIN")) {
-            user.addRole("ADMIN");
-            userRepository.save(user);
-        }
-
-        // Check if user has USER role
-        if (!user.getRoles().contains("USER")) {
-            user.addRole("USER");
-            userRepository.save(user);
-        }
-    }
-
-    @Transactional
     public void recreateAdminUser() {
         // Delete existing admin user if exists
         userRepository.findByUsername("admin").ifPresent(admin -> 
@@ -142,8 +123,7 @@ public class UserService {
         admin.setUsername("admin");
         admin.setEmail("admin@gamestore.com");
         admin.setPassword(passwordEncoder.encode("admin123"));
-        admin.addRole("ADMIN");
-        admin.addRole("USER");
+        admin.setRole("ADMIN");
         userRepository.save(admin);
     }
 } 

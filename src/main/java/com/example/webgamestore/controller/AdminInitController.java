@@ -2,6 +2,7 @@ package com.example.webgamestore.controller;
 
 import com.example.webgamestore.model.User;
 import com.example.webgamestore.repository.UserRepository;
+import com.example.webgamestore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -18,7 +18,7 @@ import java.util.HashSet;
 public class AdminInitController {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @PostMapping("/init")
     public ResponseEntity<String> initializeAdmin() {
@@ -27,20 +27,7 @@ public class AdminInitController {
             return ResponseEntity.ok("Admin user already exists");
         }
 
-        // Create new admin user
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setEmail("admin@gamestore.com");
-        admin.setPassword(passwordEncoder.encode("admin123"));
-        admin.setFirstName("Admin");
-        admin.setLastName("User");
-        admin.setRegistrationDate(LocalDateTime.now());
-        admin.setRoles(new HashSet<>());
-        admin.addRole("ADMIN");
-        admin.addRole("USER");
-
-        userRepository.save(admin);
-
+        userService.createAdminUser("admin", "admin123");
         return ResponseEntity.ok("Admin user created successfully");
     }
 } 

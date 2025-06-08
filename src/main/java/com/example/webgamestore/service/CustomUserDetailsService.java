@@ -30,8 +30,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 });
         
         log.debug("User found: {}", user.getUsername());
-        log.debug("User roles: {}", user.getRoles());
+        log.debug("User role: {}", user.getRole());
         log.debug("User authorities: {}", user.getAuthorities());
+        log.debug("Is password empty: {}", user.getPassword() == null || user.getPassword().isEmpty());
+        log.debug("Password hash: {}", user.getPassword());
         
         return user;
     }

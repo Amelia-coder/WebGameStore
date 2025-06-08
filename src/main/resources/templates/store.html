@@ -205,16 +205,19 @@
 
             <div class="games-grid">
                 <!-- Game cards will be dynamically populated here -->
-                <article class="game-card">
-                    <img src="https://via.placeholder.com/300x200" alt="Game Title" class="game-image">
+                <article class="game-card" th:each="game : ${games}">
+                    <img th:if="${game.imageUrl}" th:src="${game.imageUrl}" th:alt="${game.title}" class="game-image">
+                    <img th:unless="${game.imageUrl}" src="/images/game-placeholder.svg" th:alt="${game.title}" class="game-image">
                     <div class="game-info">
-                        <h3 class="game-title">Sample Game</h3>
-                        <p class="game-description">This is a sample game description that showcases the game's features and story.</p>
-                        <p class="game-price">$29.99</p>
-                        <a href="#" class="buy-button">Buy Now</a>
+                        <h3 class="game-title" th:text="${game.title}">Game Title</h3>
+                        <div class="game-genres">
+                            <span th:each="genre : ${game.genres}" class="genre-tag" th:text="${genre.name}">Genre</span>
+                        </div>
+                        <p class="game-description" th:text="${game.description}">Game description</p>
+                        <p class="game-price" th:text="${#numbers.formatDecimal(game.price, 1, 2) + ' ₽'}">Price</p>
+                        <a th:href="@{/store/game/{id}(id=${game.id})}" class="buy-button">Купить</a>
                     </div>
                 </article>
-                <!-- More game cards... -->
             </div>
         </div>
     </main>

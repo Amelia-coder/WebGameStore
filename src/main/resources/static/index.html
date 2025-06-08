@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,36 +34,17 @@
             <div class="container">
                 <h2 class="section-title">Popular Games</h2>
                 <div class="games-grid">
-                    <!-- Game Card 1 -->
-                    <article class="game-card">
-                        <img src="https://via.placeholder.com/300x200" alt="Cyberpunk 2077" class="game-image">
+                    <article class="game-card" th:each="game : ${games}">
+                        <img th:if="${game.imageUrl}" th:src="${game.imageUrl}" th:alt="${game.title}" class="game-image">
+                        <img th:unless="${game.imageUrl}" src="/images/game-placeholder.svg" th:alt="${game.title}" class="game-image">
                         <div class="game-info">
-                            <h3 class="game-title">Cyberpunk 2077</h3>
-                            <p class="game-description">An open-world action-adventure story set in Night City, a megalopolis obsessed with power, glamour and body modification.</p>
-                            <p class="game-price">$59.99</p>
-                            <a href="/store/cyberpunk-2077" class="buy-button">Buy Now</a>
-                        </div>
-                    </article>
-
-                    <!-- Game Card 2 -->
-                    <article class="game-card">
-                        <img src="https://via.placeholder.com/300x200" alt="Half-Life" class="game-image">
-                        <div class="game-info">
-                            <h3 class="game-title">Half-Life</h3>
-                            <p class="game-description">Named Game of the Year by over 50 publications, Valve's debut title blends action and adventure with award-winning technology.</p>
-                            <p class="game-price">$9.99</p>
-                            <a href="/store/half-life" class="buy-button">Buy Now</a>
-                        </div>
-                    </article>
-
-                    <!-- Game Card 3 -->
-                    <article class="game-card">
-                        <img src="https://via.placeholder.com/300x200" alt="The Witcher 3" class="game-image">
-                        <div class="game-info">
-                            <h3 class="game-title">The Witcher 3: Wild Hunt</h3>
-                            <p class="game-description">An epic role-playing game set in a vast open world filled with dangerous monsters and intriguing quests.</p>
-                            <p class="game-price">$39.99</p>
-                            <a href="/store/witcher-3" class="buy-button">Buy Now</a>
+                            <h3 class="game-title" th:text="${game.title}">Game Title</h3>
+                            <div class="game-genres">
+                                <span th:each="genre : ${game.genres}" class="genre-tag" th:text="${genre.name}">Genre</span>
+                            </div>
+                            <p class="game-description" th:text="${game.description}">Game description</p>
+                            <p class="game-price" th:text="${#numbers.formatDecimal(game.price, 1, 2) + ' ₽'}">Price</p>
+                            <a th:href="@{/store/game/{id}(id=${game.id})}" class="buy-button">Купить</a>
                         </div>
                     </article>
                 </div>

@@ -11,9 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +33,17 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
+    public List<Game> getAllGamesWithDetails() {
+        return gameRepository.findAll();
+    }
+
     public Optional<Game> getGameById(Long id) {
         return gameRepository.findById(id);
     }
 
     @Transactional
     public Game createGame(GameDto gameDto) {
+        validateGameDto(gameDto);
         Game game = new Game();
         updateGameFromDto(game, gameDto);
         return gameRepository.save(game);
@@ -43,10 +51,29 @@ public class GameService {
 
     @Transactional
     public Game updateGame(Long id, GameDto gameDto) {
+        validateGameDto(gameDto);
         Game game = getGameById(id)
                 .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
         updateGameFromDto(game, gameDto);
         return gameRepository.save(game);
+    }
+
+    private void validateGameDto(GameDto gameDto) {
+        if (gameDto.getTitle() == null || gameDto.getTitle().trim().isEmpty()) {
+            throw new RuntimeException("Title is required");
+        }
+        if (gameDto.getPrice() == null || gameDto.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Price must be greater than 0");
+        }
+        if (gameDto.getDeveloperId() == null) {
+            throw new RuntimeException("Developer is required");
+        }
+        if (gameDto.getPublisherId() == null) {
+            throw new RuntimeException("Publisher is required");
+        }
+        if (gameDto.getGenreIds() == null || gameDto.getGenreIds().isEmpty()) {
+            throw new RuntimeException("At least one genre must be selected");
+        }
     }
 
     @Transactional
@@ -68,34 +95,33 @@ public class GameService {
         dto.setPublisherId(game.getPublisher() != null ? game.getPublisher().getId() : null);
         dto.setPrice(game.getPrice());
         dto.setImageUrl(game.getImageUrl());
+        dto.setReleaseDate(game.getReleaseDate());
         return dto;
     }
 
     private void updateGameFromDto(Game game, GameDto dto) {
-        game.setTitle(dto.getTitle());
-        game.setDescription(dto.getDescription());
-        
-        game.getGenres().clear();
-        if (dto.getGenreIds() != null) {
-            dto.getGenreIds().forEach(genreId -> {
-                Genre genre = genreRepository.findById(genreId)
-                        .orElseThrow(() -> new RuntimeException("Genre not found with id: " + genreId));
-                game.getGenres().add(genre);
-            });
-        }
-
-        if (dto.getDeveloperId() != null) {
-            game.setDeveloper(developerRepository.findById(dto.getDeveloperId())
-                    .orElseThrow(() -> new RuntimeException("Developer not found with id: " + dto.getDeveloperId())));
-        }
-
-        if (dto.getPublisherId() != null) {
-            game.setPublisher(publisherRepository.findById(dto.getPublisherId())
-                    .orElseThrow(() -> new RuntimeException("Publisher not found with id: " + dto.getPublisherId())));
-        }
-
+        game.setTitle(dto.getTitle().trim());
+        game.setDescription(dto.getDescription() != null ? dto.getDescription().trim() : null);
         game.setPrice(dto.getPrice());
-        game.setImageUrl(dto.getImageUrl());
+        game.setImageUrl(dto.getImageUrl() != null ? dto.getImageUrl().trim() : null);
+        game.setReleaseDate(dto.getReleaseDate());
+        
+        // Update developer
+        game.setDeveloper(developerRepository.findById(dto.getDeveloperId())
+                .orElseThrow(() -> new RuntimeException("Developer not found with id: " + dto.getDeveloperId())));
+
+        // Update publisher
+        game.setPublisher(publisherRepository.findById(dto.getPublisherId())
+                .orElseThrow(() -> new RuntimeException("Publisher not found with id: " + dto.getPublisherId())));
+
+        // Update genres
+        Set<Genre> genres = new HashSet<>();
+        for (Long genreId : dto.getGenreIds()) {
+            Genre genre = genreRepository.findById(genreId)
+                    .orElseThrow(() -> new RuntimeException("Genre not found with id: " + genreId));
+            genres.add(genre);
+        }
+        game.setGenres(genres);
     }
 
     public long countGames() {

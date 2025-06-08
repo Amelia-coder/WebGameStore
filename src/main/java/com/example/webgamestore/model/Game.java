@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class Game {
     @Column(length = 2000)
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "game_genres",
         joinColumns = @JoinColumn(name = "game_id"),
@@ -37,11 +38,11 @@ public class Game {
     )
     private Set<Genre> genres = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "developer_id")
     private Developer developer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
@@ -52,4 +53,7 @@ public class Game {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(name = "release_date")
+    private LocalDate releaseDate;
 } 

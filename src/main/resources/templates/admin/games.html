@@ -153,13 +153,35 @@
         }
 
         .btn-edit {
-            background-color: var(--bg-accent);
+            background-color: var(--accent);
             color: var(--text-primary);
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            justify-content: center;
         }
 
         .btn-delete {
             background-color: var(--danger);
             color: var(--text-primary);
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            justify-content: center;
         }
 
         .btn:hover {
@@ -214,24 +236,75 @@
         }
 
         .btn-primary {
-            background-color: var(--bg-accent);
+            background-color: var(--success);
             color: var(--text-primary);
             text-decoration: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
             font-weight: 500;
-            transition: opacity 0.2s;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-primary:hover {
-            opacity: 0.9;
+        .btn-secondary {
+            background-color: var(--accent);
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover,
+        .btn-edit:hover,
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0.95;
+        }
+
+        .btn-primary:active,
+        .btn-secondary:active,
+        .btn-edit:active,
+        .btn-delete:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary i,
+        .btn-secondary i,
+        .btn-edit i,
+        .btn-delete i {
+            font-size: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
     </style>
 </head>
 <body>
     <div layout:fragment="content">
         <div class="page-header">
-            <h1 class="page-title">Управление играми</h1>
+            <div class="header-left">
+                <a href="/admin" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад в админ-панель
+                </a>
+                <h1 class="page-title">Управление играми</h1>
+            </div>
             <a href="/admin/games/add" class="btn-primary">
                 <i class="fas fa-plus"></i> Добавить новую игру
             </a>

@@ -252,8 +252,7 @@
 
         .genre-label {
             display: flex;
-            align-items: center;
-            justify-content: flex-start;
+            align-items: flex-start;
             gap: 0.75rem;
             padding: 1rem;
             background-color: var(--bg-card);
@@ -268,6 +267,7 @@
             user-select: none;
             position: relative;
             overflow: hidden;
+            min-height: 80px;
         }
 
         .genre-label::before {
@@ -304,6 +304,7 @@
             opacity: 0.8;
             color: var(--accent);
             transition: all 0.2s ease;
+            margin-top: 4px;
         }
 
         .genre-checkbox:checked + .genre-label i {
@@ -311,21 +312,31 @@
             transform: scale(1.1);
         }
 
+        .genre-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
         .genre-name {
             font-weight: 500;
-            flex: 1;
+            color: var(--text-primary);
         }
 
         .genre-description {
-            display: none;
             font-size: 0.875rem;
             color: var(--text-secondary);
-            margin-top: 0.5rem;
             line-height: 1.4;
+            opacity: 0.8;
         }
 
-        .genre-label:hover .genre-description {
-            display: block;
+        .genre-checkbox:checked + .genre-label .genre-name {
+            color: var(--accent);
+        }
+
+        .genre-checkbox:checked + .genre-label .genre-description {
+            opacity: 1;
         }
 
         /* Анимация при выборе */
@@ -337,6 +348,28 @@
 
         .genre-checkbox:checked + .genre-label i {
             animation: checkmark 0.3s ease forwards;
+        }
+
+        /* Добавляем индикатор выбора */
+        .genre-label::after {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .genre-checkbox:checked + .genre-label::after {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+            background-size: 14px;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .form-text {

@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/profile/**").authenticated()
-                .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**", "/store", "/about").permitAll()
+                .requestMatchers("/cart/**").authenticated() // Require authentication for cart operations
+                .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**", "/store", "/store/**", "/about").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

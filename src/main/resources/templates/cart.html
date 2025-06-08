@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - GameStore</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --primary-text: #ffffff;
+            --secondary-text: #b3b3b3;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --transition-speed: 0.3s;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .cart-container {
+            padding-top: 2rem;
+        }
+
+        .cart-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-text);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: var(--success-color);
+            color: var(--primary-text);
+        }
+
+        .alert-danger {
+            background-color: var(--danger-color);
+            color: var(--primary-text);
+        }
+
+        .alert-info {
+            background-color: var(--accent-blue);
+            color: var(--primary-text);
+        }
+
+        .alert-link {
+            color: var(--primary-text);
+            text-decoration: underline;
+        }
+
+        .cart-card {
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--primary-bg);
+        }
+
+        .cart-table th {
+            color: var(--secondary-text);
+            font-weight: 500;
+        }
+
+        .game-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .game-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .game-title {
+            color: var(--primary-text);
+            font-weight: 500;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-size: 1.2rem;
+            padding: 1rem;
+            border-top: 2px solid var(--primary-bg);
+        }
+
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: var(--primary-text);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--primary-text);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .quantity {
+            font-weight: 500;
+            color: var(--accent-blue);
+        }
+
+        .price {
+            font-weight: 500;
+            color: var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+    <!-- Include the header fragment -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="cart-container">
+        <div class="container">
+            <h1 class="cart-title">Shopping Cart</h1>
+
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Empty Cart Message -->
+            <div th:if="${#lists.isEmpty(cartItems)}" class="alert alert-info">
+                Your cart is empty. <a href="/store" class="alert-link">Continue shopping</a>
+            </div>
+
+            <!-- Cart Items -->
+            <div th:if="${not #lists.isEmpty(cartItems)}" class="cart-card">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td>
+                                <div class="game-info">
+                                    <img th:if="${item.game.imageUrl}" th:src="${item.game.imageUrl}"
+                                         class="game-image" th:alt="${item.game.title}">
+                                    <img th:unless="${item.game.imageUrl}" src="/images/game-placeholder.svg"
+                                         class="game-image" th:alt="${item.game.title}">
+                                    <span class="game-title" th:text="${item.game.title}">Game Title</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="price" th:text="${#numbers.formatDecimal(item.game.price, 1, 2) + ' ₽'}">Price</span>
+                            </td>
+                            <td>
+                                <span class="quantity" th:text="${item.quantity}">1</span>
+                            </td>
+                            <td>
+                                <span class="price" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' ₽'}">Total</span>
+                            </td>
+                            <td>
+                                <form th:action="@{/cart/remove/{id}(id=${item.game.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="cart-total">Total:</td>
+                            <td colspan="2" class="cart-total">
+                                <strong class="price" th:text="${#numbers.formatDecimal(total, 1, 2) + ' ₽'}">Total</strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="cart-actions">
+                    <a href="/store" class="btn btn-secondary">Continue Shopping</a>
+                    <form th:action="@{/cart/checkout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-primary">Checkout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

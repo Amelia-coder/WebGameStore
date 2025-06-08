@@ -1,4 +1,5 @@
 -- Drop all existing tables
+DROP TABLE IF EXISTS cart_items CASCADE;
 DROP TABLE IF EXISTS order_items CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS game_genres CASCADE;
@@ -79,4 +80,13 @@ CREATE TABLE order_items (
     quantity INTEGER NOT NULL,
     price_per_unit DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE cart_items (
+    id SERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    game_id BIGINT NOT NULL REFERENCES games(id),
+    quantity INTEGER NOT NULL DEFAULT 1,
+    price DECIMAL(10,2) NOT NULL,
+    UNIQUE (user_id, game_id)
 ); 

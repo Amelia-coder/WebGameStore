@@ -194,6 +194,27 @@
         .genre-tag:nth-child(3n+3) {
             background-color: #2ea043; /* Success color for variety */
         }
+
+        .game-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .details-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid var(--accent-blue);
+            transition: all var(--transition-speed);
+        }
+
+        .details-button:hover {
+            background: var(--accent-blue);
+        }
     </style>
 </head>
 <body>
@@ -253,7 +274,12 @@
                         </div>
                         <p class="game-description" th:text="${game.description}">Game description</p>
                         <p class="game-price" th:text="${#numbers.formatDecimal(game.price, 1, 2) + ' ₽'}">Price</p>
-                        <a th:href="@{/store/game/{id}(id=${game.id})}" class="buy-button">Купить</a>
+                        <div class="game-actions">
+                            <form th:action="@{/cart/add/{id}(id=${game.id})}" method="post" style="display: inline;">
+                                <button type="submit" class="buy-button">Add to Cart</button>
+                            </form>
+                            <a th:href="@{/store/game/{id}(id=${game.id})}" class="details-button">Details</a>
+                        </div>
                     </div>
                 </article>
             </div>

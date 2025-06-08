@@ -160,6 +160,24 @@
             .logout-button:hover {
                 opacity: 0.9;
             }
+
+            .cart-link {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: var(--secondary-text);
+                text-decoration: none;
+                transition: color var(--transition-speed);
+                margin-right: 1rem;
+            }
+
+            .cart-link:hover {
+                color: var(--primary-text);
+            }
+
+            .cart-icon {
+                font-size: 1.2rem;
+            }
         </style>
 
         <div class="container header-content">
@@ -179,6 +197,12 @@
                 </div>
                 
                 <!-- Show when user is authenticated -->
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/cart}" class="cart-link">
+                        <span class="cart-icon">🛒</span>
+                        <span>Cart</span>
+                    </a>
+                </div>
                 <div sec:authorize="isAuthenticated()" class="user-profile">
                     <div class="user-info">
                         <img th:src="@{/images/avatar.svg}" alt="User avatar" class="user-avatar">

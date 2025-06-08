@@ -1,12 +1,10 @@
 package com.example.webgamestore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "publishers")
@@ -18,14 +16,15 @@ public class Publisher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Name is required")
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
 
-    @Column(nullable = false)
-    private String country;
+    @Column(name = "founded_year")
+    private Integer foundedYear;
 
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Game> games = new ArrayList<>();
+    @Column(name = "website_url")
+    private String websiteUrl;
 } 

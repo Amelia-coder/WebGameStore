@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +19,8 @@ public class GameService {
         return gameRepository.findAll();
     }
 
-    public Game getGameById(Long id) {
-        return gameRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
+    public Optional<Game> getGameById(Long id) {
+        return gameRepository.findById(id);
     }
 
     public List<Game> getGamesByDeveloper(Long developerId) {
@@ -36,13 +36,19 @@ public class GameService {
     }
 
     @Transactional
-    public Game createGame(Game game) {
+    public Game saveGame(Game game) {
         return gameRepository.save(game);
     }
 
     @Transactional
+    public Game createGame(Game game) {
+        return saveGame(game);
+    }
+
+    @Transactional
     public Game updateGame(Long id, Game gameDetails) {
-        Game game = getGameById(id);
+        Game game = getGameById(id)
+                .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
         game.setTitle(gameDetails.getTitle());
         game.setDescription(gameDetails.getDescription());
         game.setPrice(gameDetails.getPrice());
@@ -50,11 +56,15 @@ public class GameService {
         game.setDeveloper(gameDetails.getDeveloper());
         game.setPublisher(gameDetails.getPublisher());
         game.setGenres(gameDetails.getGenres());
-        return gameRepository.save(game);
+        return saveGame(game);
     }
 
     @Transactional
     public void deleteGame(Long id) {
         gameRepository.deleteById(id);
+    }
+
+    public long countGames() {
+        return gameRepository.count();
     }
 } 

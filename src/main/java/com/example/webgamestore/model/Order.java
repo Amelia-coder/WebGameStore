@@ -30,8 +30,8 @@ public class Order {
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

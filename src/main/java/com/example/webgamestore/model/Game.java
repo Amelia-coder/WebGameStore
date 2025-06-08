@@ -1,6 +1,9 @@
 package com.example.webgamestore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -20,24 +23,31 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     @Column(nullable = false)
     private String title;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be positive")
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(nullable = false)
     private LocalDate releaseDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "developer_id", nullable = false)
+    @JoinColumn(name = "developer_id")
     private Developer developer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publisher_id", nullable = false)
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToMany
     @JoinTable(

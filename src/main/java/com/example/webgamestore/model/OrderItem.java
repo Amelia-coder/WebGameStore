@@ -26,8 +26,19 @@ public class OrderItem {
     private Game game;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private Integer quantity;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private BigDecimal pricePerUnit;
+
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
+
+    @PrePersist
+    @PreUpdate
+    protected void calculateTotalPrice() {
+        if (quantity != null && pricePerUnit != null) {
+            totalPrice = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
+        }
+    }
 } 

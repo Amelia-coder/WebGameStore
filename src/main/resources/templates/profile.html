@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Store - Профиль пользователя</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #7289da;
+            --danger: #dc3545;
+            --success: #28a745;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            --border-radius: 8px;
+            --input-bg: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .profile-sidebar {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            height: fit-content;
+        }
+
+        .avatar-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+        }
+
+        .user-role {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: var(--text-primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            text-align: center;
+        }
+
+        .username {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .email {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .edit-profile-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .edit-profile-btn:hover {
+            opacity: 0.9;
+        }
+
+        .profile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 1rem;
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-genre {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .purchase-date {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Edit Profile Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--bg-card);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .save-changes-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--success);
+            color: var(--text-primary);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .save-changes-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="avatar-container">
+                <img src="/images/default-avatar.png" alt="User Avatar" class="avatar">
+                <span class="user-role">ADMIN</span>
+            </div>
+            <div class="user-info">
+                <h1 class="username">John Doe</h1>
+                <div class="email">john.doe@example.com</div>
+                <button class="edit-profile-btn" onclick="openModal()">
+                    Редактировать профиль
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="profile-content">
+            <section class="my-games">
+                <h2 class="section-title">Мои игры</h2>
+                <div class="games-grid">
+                    <!-- Example Game Card -->
+                    <div class="game-card">
+                        <img src="https://via.placeholder.com/300x180" alt="Game Title" class="game-image">
+                        <div class="game-info">
+                            <h3 class="game-title">Red Dead Redemption 2</h3>
+                            <div class="game-genre">Action / Adventure</div>
+                            <div class="purchase-date">Куплено: 15.03.2024</div>
+                        </div>
+                    </div>
+
+                    <!-- Example Game Card -->
+                    <div class="game-card">
+                        <img src="https://via.placeholder.com/300x180" alt="Game Title" class="game-image">
+                        <div class="game-info">
+                            <h3 class="game-title">God of War</h3>
+                            <div class="game-genre">Action / RPG</div>
+                            <div class="purchase-date">Куплено: 10.03.2024</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Редактирование профиля</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form action="/api/user/profile" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="username">Имя пользователя *</label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-control" 
+                           value="John Doe"
+                           required
+                           minlength="3"
+                           maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email *</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           class="form-control"
+                           value="john.doe@example.com"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="newPassword">Новый пароль</label>
+                    <input type="password" 
+                           id="newPassword" 
+                           name="newPassword" 
+                           class="form-control"
+                           minlength="8"
+                           placeholder="Оставьте пустым, чтобы не менять">
+                    <div class="form-hint">Минимум 8 символов</div>
+                </div>
+
+                <button type="submit" class="save-changes-btn">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('editProfileModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editProfileModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editProfileModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html> 

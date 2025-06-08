@@ -228,10 +228,10 @@
 
         .genres-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 1rem;
             margin-bottom: 1rem;
-            padding: 1rem;
+            padding: 1.5rem;
             background-color: var(--bg-dark);
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
@@ -253,52 +253,96 @@
         .genre-label {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            justify-content: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
             background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s ease;
-            text-align: center;
-            font-size: 0.875rem;
+            text-align: left;
+            font-size: 1rem;
             width: 100%;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .genre-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .genre-checkbox:checked + .genre-label {
-            background-color: var(--accent);
+            background-color: var(--bg-dark);
             border-color: var(--accent);
             color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(114, 137, 218, 0.2);
+        }
+
+        .genre-checkbox:checked + .genre-label::before {
+            opacity: 1;
         }
 
         .genre-checkbox:hover + .genre-label {
             border-color: var(--accent);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .genre-label i {
-            font-size: 1rem;
+            font-size: 1.2rem;
             opacity: 0.8;
+            color: var(--accent);
+            transition: all 0.2s ease;
+        }
+
+        .genre-checkbox:checked + .genre-label i {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .genre-name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .genre-description {
+            display: none;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .genre-label:hover .genre-description {
+            display: block;
+        }
+
+        /* Анимация при выборе */
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .genre-checkbox:checked + .genre-label i {
+            animation: checkmark 0.3s ease forwards;
         }
 
         .form-text {
             color: var(--text-secondary);
             font-size: 0.875rem;
             margin-top: 0.5rem;
-        }
-
-        /* Анимация при выборе */
-        .genre-checkbox:checked + .genre-label i {
-            animation: bounce 0.3s ease;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
         }
 
         .form-actions {
@@ -423,7 +467,10 @@
                                     <label class="genre-label" 
                                            th:for="${'genre-' + genre.id}">
                                         <i class="fas fa-gamepad"></i>
-                                        <span th:text="${genre.name}">Genre Name</span>
+                                        <div class="genre-content">
+                                            <div class="genre-name" th:text="${genre.name}">Genre Name</div>
+                                            <div class="genre-description" th:text="${genre.description}">Genre Description</div>
+                                        </div>
                                     </label>
                                 </div>
                             </th:block>
@@ -431,7 +478,7 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('genreIds')}" th:errors="*{genreIds}">
                             Пожалуйста, выберите хотя бы один жанр.
                         </div>
-                        <small class="form-text text-muted">Выберите один или несколько жанров для игры</small>
+                        <small class="form-text text-muted">Выберите один или несколько жанров для игры. Наведите курсор на жанр для просмотра описания.</small>
                     </div>
 
                     <div class="form-group">

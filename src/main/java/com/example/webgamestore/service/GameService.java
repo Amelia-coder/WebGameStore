@@ -1,5 +1,6 @@
 package com.example.webgamestore.service;
 
+import com.example.webgamestore.dto.GameDto;
 import com.example.webgamestore.model.Game;
 import com.example.webgamestore.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,20 +8,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GameService {
     private final GameRepository gameRepository;
+    private final DeveloperService developerService;
+    private final PublisherService publisherService;
 
-    public List<Game> getAllGames() {
-        return gameRepository.findAll();
+    public List<GameDto> getAllGames() {
+        return gameRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Game> getGameById(Long id) {
-        return gameRepository.findById(id);
+    public Game getGameById(Long id) {
+        return gameRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
     }
 
     public List<Game> getGamesByDeveloper(Long developerId) {
@@ -36,27 +42,17 @@ public class GameService {
     }
 
     @Transactional
-    public Game saveGame(Game game) {
+    public Game createGame(GameDto gameDto) {
+        Game game = new Game();
+        updateGameFromDto(game, gameDto);
         return gameRepository.save(game);
     }
 
     @Transactional
-    public Game createGame(Game game) {
-        return saveGame(game);
-    }
-
-    @Transactional
-    public Game updateGame(Long id, Game gameDetails) {
-        Game game = getGameById(id)
-                .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
-        game.setTitle(gameDetails.getTitle());
-        game.setDescription(gameDetails.getDescription());
-        game.setPrice(gameDetails.getPrice());
-        game.setReleaseDate(gameDetails.getReleaseDate());
-        game.setDeveloper(gameDetails.getDeveloper());
-        game.setPublisher(gameDetails.getPublisher());
-        game.setGenres(gameDetails.getGenres());
-        return saveGame(game);
+    public Game updateGame(Long id, GameDto gameDto) {
+        Game game = getGameById(id);
+        updateGameFromDto(game, gameDto);
+        return gameRepository.save(game);
     }
 
     @Transactional
@@ -66,5 +62,28 @@ public class GameService {
 
     public long countGames() {
         return gameRepository.count();
+    }
+
+    public GameDto convertToDto(Game game) {
+        GameDto dto = new GameDto();
+        dto.setId(game.getId());
+        dto.setTitle(game.getTitle());
+        dto.setDescription(game.getDescription());
+        dto.setPrice(game.getPrice());
+        dto.setReleaseDate(game.getReleaseDate());
+        dto.setDeveloperId(game.getDeveloper().getId());
+        dto.setPublisherId(game.getPublisher().getId());
+        dto.setImageUrl(game.getImageUrl());
+        return dto;
+    }
+
+    private void updateGameFromDto(Game game, GameDto dto) {
+        game.setTitle(dto.getTitle());
+        game.setDescription(dto.getDescription());
+        game.setPrice(dto.getPrice());
+        game.setReleaseDate(dto.getReleaseDate());
+        game.setDeveloper(developerService.getDeveloperById(dto.getDeveloperId()));
+        game.setPublisher(publisherService.getPublisherById(dto.getPublisherId()));
+        game.setImageUrl(dto.getImageUrl());
     }
 } 

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title th:text="${game.id} ? 'Edit Game' : 'Add New Game'"></title>
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--bg-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .image-preview-container {
+            grid-column: 1 / -1;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--border-color);
+        }
+
+        .image-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-secondary);
+            text-align: center;
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .image-preview-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--bg-accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .invalid-feedback {
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ef4444'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+        }
+
+        .form-control.is-invalid:focus {
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+
+        .required-field::after {
+            content: "*";
+            color: var(--danger);
+            margin-left: 0.25rem;
+        }
+
+        /* Alert styles */
+        .alert {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .alert-danger {
+            border-color: var(--danger);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Custom date input styling */
+        input[type="date"] {
+            position: relative;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E");
+            background-position: center;
+            background-size: contain;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 0.75;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="page-header">
+            <h1 class="page-title" th:text="${game.id} ? 'Edit Game' : 'Add New Game'"></h1>
+            <a th:href="@{/admin/games}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Games
+            </a>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="form-container">
+            <form th:action="${game.id} ? @{/admin/games/edit/{id}(id=${game.id})} : @{/admin/games/add}"
+                  th:object="${game}" method="post" class="needs-validation" novalidate>
+                
+                <div class="image-preview-container">
+                    <img id="imagePreview" 
+                         th:src="${game.imageUrl} ? ${game.imageUrl} : ''"
+                         class="image-preview"
+                         style="display: none;"
+                         alt="Game Image Preview">
+                    <div id="imagePlaceholder" class="image-preview-placeholder">
+                        <i class="fas fa-image"></i>
+                        <p>Game image preview will appear here</p>
+                        <small>Enter an image URL below to see a preview</small>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title" class="form-label required-field">Title</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}" 
+                               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'" 
+                               placeholder="Enter game title"
+                               required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                            Please provide a title.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price" class="form-label required-field">Price ($)</label>
+                        <input type="number" class="form-control" id="price" th:field="*{price}" 
+                               step="0.01" min="0" 
+                               th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
+                               placeholder="0.00"
+                               required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">
+                            Please provide a valid price.
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label required-field">Description</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" 
+                                  th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
+                                  placeholder="Enter game description"
+                                  required></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
+                            Please provide a description.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="developerId" class="form-label required-field">Developer</label>
+                        <select class="form-control" id="developerId" th:field="*{developerId}"
+                                th:classappend="${#fields.hasErrors('developerId')} ? 'is-invalid'" required>
+                            <option value="">Select a developer</option>
+                            <option th:each="developer : ${developers}"
+                                    th:value="${developer.id}"
+                                    th:text="${developer.name}">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('developerId')}" th:errors="*{developerId}">
+                            Please select a developer.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="publisherId" class="form-label required-field">Publisher</label>
+                        <select class="form-control" id="publisherId" th:field="*{publisherId}"
+                                th:classappend="${#fields.hasErrors('publisherId')} ? 'is-invalid'" required>
+                            <option value="">Select a publisher</option>
+                            <option th:each="publisher : ${publishers}"
+                                    th:value="${publisher.id}"
+                                    th:text="${publisher.name}">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('publisherId')}" th:errors="*{publisherId}">
+                            Please select a publisher.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="releaseDate" class="form-label">Release Date</label>
+                        <input type="date" class="form-control" id="releaseDate" th:field="*{releaseDate}"
+                               th:classappend="${#fields.hasErrors('releaseDate')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}">
+                            Please provide a valid release date.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUrl" class="form-label">Image URL</label>
+                        <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}"
+                               th:classappend="${#fields.hasErrors('imageUrl')} ? 'is-invalid'"
+                               placeholder="https://example.com/game-image.jpg">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}">
+                            Please provide a valid image URL.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/admin/games}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Game
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePlaceholder = document.getElementById('imagePlaceholder');
+            const imageUrl = document.getElementById('imageUrl');
+
+            function updateImagePreview(url) {
+                if (url) {
+                    imagePreview.src = url;
+                    imagePreview.style.display = 'block';
+                    imagePlaceholder.style.display = 'none';
+                    
+                    imagePreview.onerror = function() {
+                        imagePreview.style.display = 'none';
+                        imagePlaceholder.style.display = 'block';
+                    }
+                } else {
+                    imagePreview.style.display = 'none';
+                    imagePlaceholder.style.display = 'block';
+                }
+            }
+
+            // Initial load
+            updateImagePreview(imageUrl.value);
+
+            // Update on change
+            imageUrl.addEventListener('input', function() {
+                updateImagePreview(this.value);
+            });
+
+            // Form validation
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    </script>
+</body>
+</html> 

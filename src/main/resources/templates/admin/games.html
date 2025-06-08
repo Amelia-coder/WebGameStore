@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Store Admin - Games List</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #7289da;
+            --danger: #dc3545;
+            --success: #28a745;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .add-game-btn {
+            background-color: var(--success);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .add-game-btn:hover {
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 1.2rem;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-genre {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-edit {
+            background-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .btn-delete {
+            background-color: var(--danger);
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Управление играми</h1>
+            <button class="add-game-btn" onclick="window.location.href='/admin/games/add'">
+                Добавить новую игру
+            </button>
+        </header>
+
+        <main class="games-grid">
+            <!-- Example game card -->
+            <div class="game-card">
+                <img src="https://via.placeholder.com/300x180" alt="Cyberpunk 2077" class="game-image">
+                <div class="game-info">
+                    <h2 class="game-title">Cyberpunk 2077</h2>
+                    <div class="game-genre">RPG / Открытый мир</div>
+                    <p class="game-description">
+                        Захватывающая ролевая игра в открытом мире будущего. Исследуйте Найт-Сити и станьте легендой киберпанка.
+                    </p>
+                    <div class="game-price">2999 ₽</div>
+                    <div class="card-actions">
+                        <button class="btn btn-edit">Редактировать</button>
+                        <button class="btn btn-delete">Удалить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example game card -->
+            <div class="game-card">
+                <img src="https://via.placeholder.com/300x180" alt="Elden Ring" class="game-image">
+                <div class="game-info">
+                    <h2 class="game-title">Elden Ring</h2>
+                    <div class="game-genre">Action RPG / Фэнтези</div>
+                    <p class="game-description">
+                        Эпическое приключение в мире фэнтези от создателей Dark Souls. Исследуйте огромный открытый мир.
+                    </p>
+                    <div class="game-price">3499 ₽</div>
+                    <div class="card-actions">
+                        <button class="btn btn-edit">Редактировать</button>
+                        <button class="btn btn-delete">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

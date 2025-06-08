@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Store Admin - Games List</title>
+    <title>Управление играми</title>
     <style>
         :root {
             --bg-dark: #1a1a1a;
@@ -68,13 +70,14 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
+            margin-top: 2rem;
         }
 
         .game-card {
-            background-color: var(--bg-card);
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
 
@@ -96,12 +99,22 @@
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
 
-        .game-genre {
-            color: var(--accent);
-            font-size: 0.9rem;
+        .game-genres {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
             margin-bottom: 0.5rem;
+        }
+
+        .genre-tag {
+            background-color: var(--bg-accent);
+            color: var(--text-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
 
         .game-description {
@@ -118,6 +131,7 @@
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1rem;
+            color: var(--text-primary);
         }
 
         .card-actions {
@@ -127,17 +141,19 @@
 
         .btn {
             padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
+            border-radius: 4px;
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
             transition: opacity 0.2s;
             flex: 1;
+            text-align: center;
+            text-decoration: none;
         }
 
         .btn-edit {
-            background-color: var(--accent);
+            background-color: var(--bg-accent);
             color: var(--text-primary);
         }
 
@@ -149,52 +165,117 @@
         .btn:hover {
             opacity: 0.9;
         }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background-color: var(--success);
+            color: var(--text-primary);
+        }
+
+        .alert-error {
+            background-color: var(--danger);
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background-color: var(--bg-accent);
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="title">Управление играми</h1>
-            <button class="add-game-btn" onclick="window.location.href='/admin/games/add'">
-                Добавить новую игру
-            </button>
-        </header>
+    <div layout:fragment="content">
+        <div class="page-header">
+            <h1 class="page-title">Управление играми</h1>
+            <a href="/admin/games/add" class="btn-primary">
+                <i class="fas fa-plus"></i> Добавить новую игру
+            </a>
+        </div>
 
-        <main class="games-grid">
-            <!-- Example game card -->
-            <div class="game-card">
-                <img src="https://via.placeholder.com/300x180" alt="Cyberpunk 2077" class="game-image">
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(games)}" class="empty-state">
+            <div class="empty-state-icon">🎮</div>
+            <div class="empty-state-text">Пока нет добавленных игр</div>
+            <a href="/admin/games/add" class="btn-primary">
+                <i class="fas fa-plus"></i> Добавить первую игру
+            </a>
+        </div>
+
+        <!-- Game Cards -->
+        <div class="games-grid">
+            <div th:each="game : ${games}" class="game-card">
+                <img th:if="${game.imageUrl}" th:src="${game.imageUrl}" th:alt="${game.title}" class="game-image">
+                <img th:unless="${game.imageUrl}" src="/images/game-placeholder.svg" th:alt="${game.title}" class="game-image">
                 <div class="game-info">
-                    <h2 class="game-title">Cyberpunk 2077</h2>
-                    <div class="game-genre">RPG / Открытый мир</div>
-                    <p class="game-description">
-                        Захватывающая ролевая игра в открытом мире будущего. Исследуйте Найт-Сити и станьте легендой киберпанка.
-                    </p>
-                    <div class="game-price">2999 ₽</div>
+                    <h2 class="game-title" th:text="${game.title}">Game Title</h2>
+                    <div class="game-genres">
+                        <span th:each="genre : ${game.genres}" class="genre-tag" th:text="${genre.name}">Genre</span>
+                    </div>
+                    <p class="game-description" th:text="${game.description}">Description</p>
+                    <div class="game-price" th:text="${#numbers.formatDecimal(game.price, 1, 2) + ' ₽'}">Price</div>
                     <div class="card-actions">
-                        <button class="btn btn-edit">Редактировать</button>
-                        <button class="btn btn-delete">Удалить</button>
+                        <a th:href="@{/admin/games/edit/{id}(id=${game.id})}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </a>
+                        <form th:action="@{/admin/games/delete/{id}(id=${game.id})}" method="POST" style="flex: 1;">
+                            <button type="submit" class="btn btn-delete" 
+                                    onclick="return confirm('Вы уверены, что хотите удалить эту игру?')">
+                                <i class="fas fa-trash"></i> Удалить
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <!-- Example game card -->
-            <div class="game-card">
-                <img src="https://via.placeholder.com/300x180" alt="Elden Ring" class="game-image">
-                <div class="game-info">
-                    <h2 class="game-title">Elden Ring</h2>
-                    <div class="game-genre">Action RPG / Фэнтези</div>
-                    <p class="game-description">
-                        Эпическое приключение в мире фэнтези от создателей Dark Souls. Исследуйте огромный открытый мир.
-                    </p>
-                    <div class="game-price">3499 ₽</div>
-                    <div class="card-actions">
-                        <button class="btn btn-edit">Редактировать</button>
-                        <button class="btn btn-delete">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
 </body>
 </html> 

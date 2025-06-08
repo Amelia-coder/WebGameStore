@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,12 +158,15 @@
             <a href="/admin/games" class="back-btn">Вернуться к списку</a>
         </header>
 
-        <form class="form-card" action="/admin/games/add" method="POST">
+        <form class="form-card" 
+              th:action="@{/admin/games/add}" 
+              method="POST" 
+              th:object="${game}">
             <div class="form-group">
                 <label class="form-label" for="title">Название игры *</label>
                 <input type="text" 
                        id="title" 
-                       name="title" 
+                       th:field="*{title}"
                        class="form-control" 
                        placeholder="Например: The Last of Us Part II"
                        required
@@ -174,7 +177,7 @@
             <div class="form-group">
                 <label class="form-label" for="description">Описание игры *</label>
                 <textarea id="description" 
-                         name="description" 
+                         th:field="*{description}"
                          class="form-control"
                          placeholder="Подробное описание игры..."
                          required
@@ -186,18 +189,18 @@
             <div class="form-group">
                 <label class="form-label" for="genre">Жанр *</label>
                 <select id="genre" 
-                        name="genre" 
+                        th:field="*{genre}"
                         class="form-control"
                         required>
                     <option value="">Выберите жанр</option>
-                    <option value="action">Action</option>
-                    <option value="rpg">RPG</option>
-                    <option value="strategy">Strategy</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="simulation">Simulation</option>
-                    <option value="sports">Sports</option>
-                    <option value="racing">Racing</option>
-                    <option value="puzzle">Puzzle</option>
+                    <option value="ACTION">Action</option>
+                    <option value="RPG">RPG</option>
+                    <option value="STRATEGY">Strategy</option>
+                    <option value="ADVENTURE">Adventure</option>
+                    <option value="SIMULATION">Simulation</option>
+                    <option value="SPORTS">Sports</option>
+                    <option value="RACING">Racing</option>
+                    <option value="PUZZLE">Puzzle</option>
                 </select>
             </div>
 
@@ -206,7 +209,7 @@
                 <div class="price-input-wrapper">
                     <input type="number" 
                            id="price" 
-                           name="price" 
+                           th:field="*{price}"
                            class="form-control"
                            placeholder="0"
                            required
@@ -221,7 +224,7 @@
                 <label class="form-label" for="imageUrl">Ссылка на изображение *</label>
                 <input type="url" 
                        id="imageUrl" 
-                       name="imageUrl" 
+                       th:field="*{imageUrl}"
                        class="form-control"
                        placeholder="https://example.com/game-image.jpg"
                        required>

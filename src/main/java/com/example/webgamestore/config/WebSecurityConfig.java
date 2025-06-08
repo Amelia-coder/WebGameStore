@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -20,7 +21,7 @@ public class WebSecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -45,7 +46,8 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/admin/init").permitAll() // Allow admin initialization
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/profile/**").authenticated()
+                .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**", "/store", "/about").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

@@ -9,7 +9,7 @@
             max-width: 800px;
             margin: 0 auto;
             background-color: var(--bg-secondary);
-            border-radius: 1rem;
+            border-radius: 8px;
             padding: 2rem;
             border: 1px solid var(--border-color);
         }
@@ -29,7 +29,7 @@
             position: relative;
             padding-top: 56.25%; /* 16:9 aspect ratio */
             background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 0.5rem;
+            border-radius: 8px;
             overflow: hidden;
             margin-bottom: 2rem;
             border: 2px dashed var(--border-color);
@@ -78,7 +78,7 @@
             padding: 0.75rem 1rem;
             background-color: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            border-radius: 4px;
             color: var(--text-primary);
             font-size: 0.875rem;
             transition: all 0.2s ease;
@@ -148,11 +148,10 @@
             margin-left: 0.25rem;
         }
 
-        /* Alert styles */
         .alert {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            border-radius: 4px;
             padding: 1rem;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
@@ -163,21 +162,36 @@
             background-color: rgba(239, 68, 68, 0.1);
         }
 
-        /* Custom date input styling */
-        input[type="date"] {
-            position: relative;
+        .genres-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E");
-            background-position: center;
-            background-size: contain;
-            opacity: 0.5;
+        .genre-checkbox {
+            display: none;
+        }
+
+        .genre-label {
+            display: block;
+            padding: 0.5rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            text-align: center;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        input[type="date"]::-webkit-calendar-picker-indicator:hover {
-            opacity: 0.75;
+        .genre-checkbox:checked + .genre-label {
+            background-color: var(--bg-accent);
+            border-color: var(--bg-accent);
+            color: var(--text-primary);
+        }
+
+        .genre-label:hover {
+            border-color: var(--text-secondary);
         }
     </style>
 </head>
@@ -185,7 +199,7 @@
     <div layout:fragment="content">
         <div class="page-header">
             <h1 class="page-title" th:text="${game.id} ? 'Edit Game' : 'Add New Game'"></h1>
-            <a th:href="@{/admin/games}" class="btn btn-primary">
+            <a th:href="@{/admin/games}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Games
             </a>
         </div>
@@ -200,11 +214,12 @@
                 
                 <div class="image-preview-container">
                     <img id="imagePreview" 
-                         th:src="${game.imageUrl} ? ${game.imageUrl} : ''"
+                         th:src="${game.imageUrl} ? ${game.imageUrl} : '/images/game-placeholder.svg'"
                          class="image-preview"
-                         style="display: none;"
+                         th:style="${game.imageUrl} ? 'display: block;' : 'display: none;'"
                          alt="Game Image Preview">
-                    <div id="imagePlaceholder" class="image-preview-placeholder">
+                    <div id="imagePlaceholder" class="image-preview-placeholder"
+                         th:style="${game.imageUrl} ? 'display: none;' : 'display: block;'">
                         <i class="fas fa-image"></i>
                         <p>Game image preview will appear here</p>
                         <small>Enter an image URL below to see a preview</small>
@@ -224,7 +239,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="price" class="form-label required-field">Price ($)</label>
+                        <label for="price" class="form-label required-field">Price (₽)</label>
                         <input type="number" class="form-control" id="price" th:field="*{price}" 
                                step="0.01" min="0" 
                                th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'"
@@ -273,6 +288,25 @@
                         </select>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('publisherId')}" th:errors="*{publisherId}">
                             Please select a publisher.
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label required-field">Genres</label>
+                        <div class="genres-container">
+                            <th:block th:each="genre : ${genres}">
+                                <input type="checkbox" 
+                                       class="genre-checkbox" 
+                                       th:id="${'genre-' + genre.id}"
+                                       th:field="*{genreIds}"
+                                       th:value="${genre.id}">
+                                <label class="genre-label" 
+                                       th:for="${'genre-' + genre.id}"
+                                       th:text="${genre.name}">Genre Name</label>
+                            </th:block>
+                        </div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('genreIds')}" th:errors="*{genreIds}">
+                            Please select at least one genre.
                         </div>
                     </div>
 

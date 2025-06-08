@@ -52,14 +52,13 @@ CREATE TABLE genres (
 );
 
 CREATE TABLE games (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    description TEXT,
+    description VARCHAR(2000),
     price DECIMAL(10,2) NOT NULL,
-    release_date DATE,
+    image_url VARCHAR(255),
     developer_id BIGINT REFERENCES developers(id),
-    publisher_id BIGINT REFERENCES publishers(id),
-    image_url VARCHAR(255)
+    publisher_id BIGINT REFERENCES publishers(id)
 );
 
 CREATE TABLE game_genres (

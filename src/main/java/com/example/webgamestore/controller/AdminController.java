@@ -4,6 +4,7 @@ import com.example.webgamestore.dto.GameDto;
 import com.example.webgamestore.model.Game;
 import com.example.webgamestore.service.DeveloperService;
 import com.example.webgamestore.service.GameService;
+import com.example.webgamestore.service.GenreService;
 import com.example.webgamestore.service.PublisherService;
 import com.example.webgamestore.service.UserService;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class AdminController {
     private final UserService userService;
     private final DeveloperService developerService;
     private final PublisherService publisherService;
+    private final GenreService genreService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
@@ -42,8 +44,7 @@ public class AdminController {
         if (!model.containsAttribute("game")) {
             model.addAttribute("game", new GameDto());
         }
-        model.addAttribute("developers", developerService.getAllDevelopers());
-        model.addAttribute("publishers", publisherService.getAllPublishers());
+        addGameFormAttributes(model);
         return "admin/game-form";
     }
 
@@ -53,8 +54,7 @@ public class AdminController {
                          RedirectAttributes redirectAttributes,
                          Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("developers", developerService.getAllDevelopers());
-            model.addAttribute("publishers", publisherService.getAllPublishers());
+            addGameFormAttributes(model);
             return "admin/game-form";
         }
 
@@ -70,15 +70,18 @@ public class AdminController {
     }
 
     @GetMapping("/games/edit/{id}")
-    public String showEditGameForm(@PathVariable Long id, Model model) {
-        if (!model.containsAttribute("game")) {
-            Game game = gameService.getGameById(id);
+    public String showEditGameForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Game game = gameService.getGameById(id)
+                    .orElseThrow(() -> new RuntimeException("Game not found with id: " + id));
             GameDto gameDto = gameService.convertToDto(game);
             model.addAttribute("game", gameDto);
+            addGameFormAttributes(model);
+            return "admin/game-form";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/games";
         }
-        model.addAttribute("developers", developerService.getAllDevelopers());
-        model.addAttribute("publishers", publisherService.getAllPublishers());
-        return "admin/game-form";
     }
 
     @PostMapping("/games/edit/{id}")
@@ -88,8 +91,7 @@ public class AdminController {
                            RedirectAttributes redirectAttributes,
                            Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("developers", developerService.getAllDevelopers());
-            model.addAttribute("publishers", publisherService.getAllPublishers());
+            addGameFormAttributes(model);
             return "admin/game-form";
         }
 
@@ -113,5 +115,11 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting game: " + e.getMessage());
         }
         return "redirect:/admin/games";
+    }
+
+    private void addGameFormAttributes(Model model) {
+        model.addAttribute("developers", developerService.getAllDevelopers());
+        model.addAttribute("publishers", publisherService.getAllPublishers());
+        model.addAttribute("genres", genreService.getAllGenres());
     }
 } 
